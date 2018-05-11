@@ -53,10 +53,6 @@ func main() {
 	}
 
 	var files map[string]string
-	var dirs map[string]string
-
-	files = make(map[string]string)
-	dirs = make(map[string]string)
 
 	loc, err := time.LoadLocation("Europe/Moscow")
 	if err != nil {
@@ -76,22 +72,10 @@ func main() {
 	memo.Reminder = rem
 
 	fmt.Println(memo)
-	dirs, err = memogo.FindFiles(globalconfig.Root, []string{"*"})
+
+	files, err = memogo.FindAllFiles(globalconfig.Root, []string{"*.*"})
 	if err != nil {
 		log.Fatalf("Main(): FindFiles error: %v", err)
-	}
-	fmt.Println("FILES FOUND:", dirs)
-
-	for k, _ := range dirs {
-		f, err := memogo.FindFiles(k, []string{"*.*"})
-		if err != nil {
-			log.Fatalf("Main(): FindFiles error: %v", err)
-		}
-		fmt.Println("FILES FOUND:", f)
-
-		for kk, vv := range f {
-			files[kk] = vv
-		}
 	}
 
 	fmt.Println("FILES FOUND:", files)
