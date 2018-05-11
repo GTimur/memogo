@@ -35,3 +35,26 @@ func FindFiles(dir string, mask []string) (files map[string]string, err error) {
 	}
 	return files, err
 }
+
+//FindAllFiles - search files in all subdirectories by selected masks
+func FindAllFiles(rootdir string, mask []string) (files map[string]string, err error) {
+	dirs := make(map[string]string)
+	files = make(map[string]string)
+
+	dirs, err = FindFiles(rootdir, []string{"*"})
+	if err != nil {
+		log.Fatalf("FindAllFiles: FindAllFiles error: %v", err)
+	}
+
+	for k := range dirs {
+		f, err := FindFiles(k, []string{"*.*"})
+		if err != nil {
+			log.Fatalf("FindAllFiles: FindAllFiles error: %v", err)
+		}
+
+		for kk, vv := range f {
+			files[kk] = vv
+		}
+	}
+	return files, err
+}
