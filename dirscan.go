@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-//search files in folder by selected masks
+//FindFiles - search files in folder by selected masks
 func FindFiles(dir string, mask []string) (files map[string]string, err error) {
 	var list []string
 	files = make(map[string]string)

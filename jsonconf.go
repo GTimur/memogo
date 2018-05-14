@@ -19,7 +19,7 @@ type Config struct {
 	MgrSrv  ManagerSrv
 }
 
-// srvSMTP setup smtp credentials
+// SrvSMTP setup smtp credentials
 type SrvSMTP struct {
 	Addr     string
 	Port     uint
@@ -30,7 +30,7 @@ type SrvSMTP struct {
 	UseTLS   bool   //auth: use TLS or plain/text
 }
 
-//Web-server address:port
+//ManagerSrv  - Web-server address:port
 type ManagerSrv struct {
 	Addr string
 	Port uint16
@@ -81,6 +81,7 @@ func (c *Config) readJSON() (err error) {
 	return err
 }
 
+// ReadJSON - reads JSON file into struct
 func (c *Config) ReadJSON() (err error) {
 	err = c.readJSON()
 	return
@@ -124,16 +125,17 @@ func (c *Config) writeJSON() (err error) {
 	return err
 }
 
-//Функция записи данных в формате JSON в файл
-//путь для файла будет взят из поля JSONFile структуры
+// WriteJSON - writes struct to JSON file
+// filepath is set in CONFIGFILE constant
 func (c *Config) WriteJSON() (err error) {
 	err = c.writeJSON()
 	return
 }
 
+// MakeConfig - creates config file if it not exists
 func (c *Config) MakeConfig() (err error) {
 	if _, err = os.Stat(CONFIGFILE); err == nil {
-		//Файл существует и не будет перезаписан
+		//File exist and will not be rewrited
 		//fmt.Println(os.IsExist(err),err)
 		return err
 	}

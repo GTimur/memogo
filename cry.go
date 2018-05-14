@@ -1,20 +1,20 @@
-/*
-  String data encription/decription realization
-*/
+// Package memogo - cry - string data encription/decription realization
 package memogo
 
 import (
 	"crypto/aes"
 	"crypto/cipher"
-	"log"
 	"fmt"
+	"log"
 )
 
 /* Вектор инициализации (16 byte) */
 var commonIV = []byte("TESTVERSION2018.")
+
 /* Ключ шифрования для AES (32 byte) */
 var word = "storeYourDataInSafePlace12312312"
 
+// AesEncrypt - encript data string
 func AesEncrypt(text string) ([]byte, error) {
 	key := word
 	IV := commonIV
@@ -32,6 +32,7 @@ func AesEncrypt(text string) ([]byte, error) {
 	return ciphertext, nil
 }
 
+// AesDecript - decript data string
 func AesDecript(text []byte) (string, error) {
 	key := word
 	IV := commonIV
