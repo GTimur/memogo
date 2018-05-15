@@ -3,7 +3,7 @@ package memogo
 import (
 	"fmt"
 	"log"
-	"path"
+	"path/filepath"
 	"strings"
 )
 
@@ -11,12 +11,13 @@ import (
 taskmgr.go - tasks manager realization
 */
 
-//var Tasks []Task
+// Tasks array
+var Tasks []Task
 
-// Rebuild - collect files
+// Rebuild - rebuilds Tasks array
 func Rebuild() error {
-	//var task Task
-	groups := make(map[int]string)
+	var task Task
+	//	groups := make(map[int]string)
 
 	// collect all groups and all files
 	var files map[string]string
@@ -29,10 +30,14 @@ func Rebuild() error {
 
 	i := 0
 	for k := range files {
-		groups[i] = path.Dir(strings.Replace(k, GlobalConfig.Root, "", -1))
+		task.ID = i
+		task.Group = filepath.Dir(strings.Replace(k, GlobalConfig.Root, "", -1))
+		task.Memo.ReadJSON(k)
 		i++
-		fmt.Println(path.Dir(strings.Replace(k, GlobalConfig.Root, "", -1)))
+		Tasks = append(Tasks, task)
 	}
+
+	fmt.Println(Tasks)
 
 	return err
 }
