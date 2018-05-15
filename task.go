@@ -6,9 +6,11 @@ task.go - memo tasks realization
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -37,7 +39,7 @@ type Remind struct {
 
 //Freq - frequency of repeating notification
 type Freq struct {
-	Granula string // Time granula: hms (hours,minutes,seconds)
+	Granula string // Time granula: mhd (minutes,hours,days)
 	Value   int    // Time value
 	Count   int    // used for AFTER options only
 }
@@ -145,4 +147,78 @@ func TestJSON() error {
 	}
 	fmt.Println("m1:", m1)
 	return err
+}
+
+//WhenRun - returns time to run for current task
+func (t *Task) WhenRun(flag int) (run time.Time, err error) {
+	g := 0 //time granula
+	c := 0 //repeat count
+	start := t.Memo.Scenario.DateStart
+	end := t.Memo.Scenario.DateEnd
+	before := t.Memo.Scenario.FreqBefore.Value > 0
+	after := t.Memo.Scenario.FreqAfter.Value > 0
+	till := t.Memo.Scenario.FreqTill.Value > 0
+
+	now := time.Now()
+
+	var when time.Time //when we execute action
+
+	if end.Before(now) {
+		return when, errors.New("Run planning error: Last date of memo event in past")
+	}
+
+	if before && start.Before(now) {
+		if strings.EqualFold(t.Memo.Scenario.FreqBefore.Granula, "d") {
+			g = 1440 //minutes
+		} else if strings.EqualFold(t.Memo.Scenario.FreqBefore.Granula, "h") {
+			g = 60 //minutes
+		} else if strings.EqualFold(t.Memo.Scenario.FreqBefore.Granula, "m") {
+			g = 1 //minute
+		}
+
+		if t.Memo.Scenario.FreqBefore.Count <= 0 {
+			c = 1
+		} else {
+			c = t.Memo.Scenario.FreqBefore.Count
+		}
+
+		when = start
+		return when, err
+	}
+
+	if till {
+		if strings.EqualFold(t.Memo.Scenario.FreqBefore.Granula, "d") {
+			g = 1440 //minutes
+		} else if strings.EqualFold(t.Memo.Scenario.FreqBefore.Granula, "h") {
+			g = 60 //minutes
+		} else if strings.EqualFold(t.Memo.Scenario.FreqBefore.Granula, "m") {
+			g = 1 //minute
+		}
+
+		if t.Memo.Scenario.FreqBefore.Count <= 0 {
+			c = 1
+		} else {
+			c = t.Memo.Scenario.FreqBefore.Count
+		}
+	}
+
+	if after {
+		if strings.EqualFold(t.Memo.Scenario.FreqBefore.Granula, "d") {
+			g = 1440 //minutes
+		} else if strings.EqualFold(t.Memo.Scenario.FreqBefore.Granula, "h") {
+			g = 60 //minutes
+		} else if strings.EqualFold(t.Memo.Scenario.FreqBefore.Granula, "m") {
+			g = 1 //minute
+		}
+
+		if t.Memo.Scenario.FreqBefore.Count <= 0 {
+			c = 1
+		} else {
+			c = t.Memo.Scenario.FreqBefore.Count
+		}
+	}
+
+	fmt.Println(g, c)
+
+	return when, err
 }
