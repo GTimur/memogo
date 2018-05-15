@@ -1,15 +1,7 @@
 package main
 
-import (
-	"fmt"
-	"log"
-	"memogo"
-)
-
-var globalconfig memogo.Config
-
 func main() {
-	globalconfig = memogo.Config{
+	memogo.GlobalConfig = memogo.Config{
 		Root: "./root/",
 		SMTPSrv: memogo.SrvSMTP{
 			Addr:     "10.20.20.6",
@@ -25,21 +17,25 @@ func main() {
 			Port: 8000,
 		},
 	}
+	
 
-	var files map[string]string
+	//var files map[string]string
 
-	files, err := memogo.FindAllFiles(globalconfig.Root, []string{"*.*"})
-	if err != nil {
-		log.Fatalf("Main(): FindFiles error: %v", err)
-	}
+	//files, err := memogo.FindAllFiles(globalconfig.Root, []string{"*.*"})
+	//if err != nil {
+	//	log.Fatalf("Main(): FindFiles error: %v", err)
+	//}
 
-	fmt.Println("FILES FOUND:", files)
+	//groupname := path.Dir(strings.Replace("./root/test2/rule01.json", globalconfig.Root, "", -1))
+	//fmt.Println("GROUPS FOUND:", groupname)
+	//fmt.Println("FILES FOUND:", files)
 
-	err = globalconfig.MakeConfig()
+	/*err = GlobalConfig.MakeConfig()
 	if err != nil {
 		panic(err)
 	}
-	err = globalconfig.WriteJSON()
+
+	err = GlobalConfig.WriteJSON()
 	if err != nil {
 		panic(err)
 	}
@@ -47,5 +43,6 @@ func main() {
 	err = memogo.TestJSON()
 	if err != nil {
 		log.Fatalf("TestJSON() error: %v", err)
-	}
+	}*/
+
 }
