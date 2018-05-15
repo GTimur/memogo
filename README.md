@@ -1,2 +1,0 @@
-# memogo
-Memo reminder
