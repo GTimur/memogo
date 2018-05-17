@@ -1,7 +1,6 @@
 package memogo
 
 import (
-	"fmt"
 	"log"
 	"path/filepath"
 	"strings"
@@ -11,15 +10,15 @@ import (
 taskmgr.go - tasks manager realization
 */
 
-// TasksGlobal - Tasks array
-var TasksGlobal []Task
+// GlobalTasks - Tasks array
+var GlobalTasks []Task
 
 // Rebuild - rebuilds Tasks array
 func TasksRebuild() error {
 	var task Task
 
 	// clean Tasks array
-	TasksGlobal = TasksGlobal[0:0]
+	GlobalTasks = GlobalTasks[0:0]
 	//	groups := make(map[int]string)
 
 	// collect all groups and all files
@@ -41,10 +40,8 @@ func TasksRebuild() error {
 			return err
 		}
 		i++
-		TasksGlobal = append(TasksGlobal, task)
+		GlobalTasks = append(GlobalTasks, task)
 	}
-
-	fmt.Println(TasksGlobal)
-
+	//fmt.Println(GlobalTasks)
 	return err
 }
