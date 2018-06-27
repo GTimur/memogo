@@ -18,7 +18,7 @@ import (
 
 // Memo definiton
 type Memo struct {
-	ID       int       //ID
+	ID       int64       //ID
 	Date     time.Time //Date of creation
 	Scenario Remind    //Notification scheduling scenario options
 	Subj     string    //visible memo subject (header)

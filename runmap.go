@@ -7,15 +7,9 @@ import (
 	"time"
 )
 
-// GlobalTimeMap - store map of runtime for every memo
-var (
-	GlobalTimeMap   map[int64]map[int]time.Time
-	GlobalTimeCount map[int64]map[int]int
-)
-
 func InitGlobalTimeMap() {
-	GlobalTimeMap = make(map[int64]map[int]time.Time)
-	GlobalTimeCount = make(map[int64]map[int]int)
+	GlobalTimeMap = make(map[int64]map[int64]time.Time)
+	GlobalTimeCount = make(map[int64]map[int64]int)
 }
 
 func BuildTimeMap() (err error) {
@@ -26,11 +20,11 @@ func BuildTimeMap() (err error) {
 	for _, task := range GlobalTasks {
 		err = BuildTimeMapTask(task)
 		if err != nil {
-			fmt.Printf("BuildTimeMap error: %v", err)
-			return err
+			fmt.Printf("BuildTimeMap error: %v\n", err)
+			continue
 		}
 	}
-	return err
+	return nil //err
 }
 
 //BuildTimeMapTask - fills GlobalTimeMap for task
@@ -48,14 +42,16 @@ func BuildTimeMapTask(t Task) (err error) {
 
 	now := time.Now()  //now basis time
 	next := time.Now() //temporary variable for calculations
-	id := 0
-	timemap := make(map[int]time.Time)
-	timecount := make(map[int]int)
+	var id int64
+	id = 0
+	timemap := make(map[int64]time.Time) // [map_id]time
+	timecount := make(map[int64]int)     // [map_id]count
 
 	if end.Before(now) && !after {
 		return errors.New("Run planning error: Memo event outdated")
 	}
 
+	// Задача до текущей даты и еще не началась.
 	if before && !start.Before(now) && !end.Before(now) {
 		if strings.EqualFold(t.Memo.Scenario.FreqBefore.Granula, "d") {
 			g = 1440 //minutes
@@ -71,6 +67,7 @@ func BuildTimeMapTask(t Task) (err error) {
 			c = t.Memo.Scenario.FreqBefore.Count
 		}
 
+		// Планируем интервалы следующих дат уведомления
 		next = start.Add(time.Second * time.Duration(-1*t.Memo.Scenario.FreqBefore.Value*g*60))
 		for next.Before(start) {
 			timemap[id] = next

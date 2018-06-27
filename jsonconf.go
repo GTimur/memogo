@@ -9,9 +9,6 @@ import (
 	"strings"
 )
 
-// GlobalConfig - global configuration
-var GlobalConfig Config
-
 // CONFIGFILE - constant path to json config file
 const CONFIGFILE = "./config.json"
 

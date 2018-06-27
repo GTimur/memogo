@@ -25,13 +25,9 @@ type TaskPlan struct {
 // Queue - queue of Tasks run-plans
 type Queue []TaskPlan
 
-var QueueGlobal Queue
-
 // Analize - analyze Tasks
 func (q *Queue) Analize() (err error) {
 	QueueGlobal = QueueGlobal[0:0]
-
-	TasksRebuild()
 
 	//for r, v := range TasksGlobal {
 

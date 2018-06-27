@@ -10,11 +10,8 @@ import (
 taskmgr.go - tasks manager realization
 */
 
-// GlobalTasks - Tasks array
-var GlobalTasks []Task
-
-// Rebuild - rebuilds Tasks array
-func TasksRebuild() error {
+// TasksReload - rebuilds Tasks array
+func TasksReload() error {
 	var task Task
 
 	// clean Tasks array
