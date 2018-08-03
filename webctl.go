@@ -30,6 +30,21 @@ var (
 	Quit     = make(chan int, 1) // Канал для завершения сервера HTTP
 )
 
+var (
+	HTMLDOC = `<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>{{ .Title }}</title>
+</head>
+<body>
+	{{ .Body }}
+</body>
+</html>`
+)
+
 /*Сервер*/
 //Запускает goroutine http.Server
 func (w *WebCtl) StartServe() (err error) {
@@ -103,18 +118,7 @@ func urlhome(w http.ResponseWriter, r *http.Request) {
 	body := `<h1>Welcome to homepage</h1>
 	<p>You are welcome!</p>`
 
-	main := `<!DOCTYPE html>
-	<html>
-	<head>
-    	<meta charset="utf-8">
-    	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-    	<meta name="viewport" content="width=device-width, initial-scale=1">
-    	<title>{{ .Title }}</title>
-	</head>
-	<body>
-		{{ .Body }}
-	</body>
-	</html>`
+	main := HTMLDOC
 
 	page := Page{Title: "HOME PAGE",
 		Body:    template.HTML(body),
@@ -136,37 +140,29 @@ func urlhome(w http.ResponseWriter, r *http.Request) {
 }
 
 func urlres(w http.ResponseWriter, r *http.Request) {
+	// read tasks from disk and rebuild GlobalTask
 	err := TasksReload()
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	// read GlobalTask array and rebuild GlobalTimeMap
 	err = BuildTimeMap()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	err = QueueGlobal.MakeQueue()
+	// read GlobalTimeMap and build GlobalQueue
+	err = GlobalQueue.MakeQueue()
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	w.Header().Set("Content-Type", "text/html")
 
-	body := QueueGlobal.String()
+	body := GlobalQueue.String()
 
-	main := `<!DOCTYPE html>
-	<html>
-	<head>
-    	<meta charset="utf-8">
-    	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-    	<meta name="viewport" content="width=device-width, initial-scale=1">
-    	<title>{{ .Title }}</title>
-	</head>
-	<body>
-		{{ .Body }}
-	</body>
-	</html>`
+	main := HTMLDOC
 
 	page := Page{Title: "RESULT SET",
 		Body:    template.HTML(body),

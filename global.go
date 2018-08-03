@@ -10,7 +10,7 @@ import "time"
 var GlobalConfig Config
 
 // QueueGlobal - global Queue (plan)
-var QueueGlobal Queue
+var GlobalQueue Queue
 
 // GlobalTimeMap - store map of runtime for every memo (runmap)
 var (
