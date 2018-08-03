@@ -8,8 +8,8 @@ import (
 )
 
 func InitGlobalTimeMap() {
-	GlobalTimeMap = make(map[int64]map[int64]time.Time)
-	GlobalTimeCount = make(map[int64]map[int64]int)
+	GlobalTimeMap = make(map[int64]map[int64]time.Time) // map[TaskID]map[MemoID]time.Time
+	GlobalTimeCount = make(map[int64]map[int64]int)     // map[TaskID]map[MemoID]int
 }
 
 func BuildTimeMap() (err error) {
@@ -29,11 +29,11 @@ func BuildTimeMap() (err error) {
 
 //BuildTimeMapTask - fills GlobalTimeMap for task
 func BuildTimeMapTask(t Task) (err error) {
-	g := 0 //time granula
-	c := 0 //repeat count
-	before := t.Memo.Scenario.FreqBefore.Value > 0
-	after := t.Memo.Scenario.FreqAfter.Value > 0
-	till := t.Memo.Scenario.FreqTill.Value > 0
+	g := 0                                         //time granula
+	c := 0                                         //repeat count
+	before := t.Memo.Scenario.FreqBefore.Value > 0 //Уведомлять до начала события
+	after := t.Memo.Scenario.FreqAfter.Value > 0   //Уведомлять после окончания события
+	till := t.Memo.Scenario.FreqTill.Value > 0     //Уведомлять на протяжении события
 
 	start := t.Memo.Scenario.DateStart
 	end := t.Memo.Scenario.DateEnd
@@ -48,18 +48,12 @@ func BuildTimeMapTask(t Task) (err error) {
 	timecount := make(map[int64]int)     // [map_id]count
 
 	if end.Before(now) && !after {
-		return errors.New("Run planning error: Memo event outdated")
+		return errors.New(fmt.Sprint("Event <Group:", t.Group, ",ID:", t.ID, "> outdated:", end.String()))
 	}
 
-	// Задача до текущей даты и еще не началась.
+	// Задача с предварительным уведомлением до начала события, до текущей даты и еще не началась.
 	if before && !start.Before(now) && !end.Before(now) {
-		if strings.EqualFold(t.Memo.Scenario.FreqBefore.Granula, "d") {
-			g = 1440 //minutes
-		} else if strings.EqualFold(t.Memo.Scenario.FreqBefore.Granula, "h") {
-			g = 60 //minutes
-		} else if strings.EqualFold(t.Memo.Scenario.FreqBefore.Granula, "m") {
-			g = 1 //minute
-		}
+		g = Gran(t.Memo.Scenario.FreqBefore.Granula)
 
 		if t.Memo.Scenario.FreqBefore.Count <= 0 {
 			c = 1
@@ -69,7 +63,7 @@ func BuildTimeMapTask(t Task) (err error) {
 
 		// Планируем интервалы следующих дат уведомления
 		next = start.Add(time.Second * time.Duration(-1*t.Memo.Scenario.FreqBefore.Value*g*60))
-		for next.Before(start) {
+		for !next.After(start) {
 			timemap[id] = next
 			GlobalTimeMap[int64(t.Memo.ID)] = timemap
 			timecount[id] = c
@@ -80,13 +74,7 @@ func BuildTimeMapTask(t Task) (err error) {
 	}
 
 	if till && !end.Before(now) {
-		if strings.EqualFold(t.Memo.Scenario.FreqTill.Granula, "d") {
-			g = 1440 //minutes
-		} else if strings.EqualFold(t.Memo.Scenario.FreqTill.Granula, "h") {
-			g = 60 //minutes
-		} else if strings.EqualFold(t.Memo.Scenario.FreqTill.Granula, "m") {
-			g = 1 //minute
-		}
+		g = Gran(t.Memo.Scenario.FreqTill.Granula)
 
 		if t.Memo.Scenario.FreqTill.Count == 0 {
 			c = 1
@@ -97,11 +85,11 @@ func BuildTimeMapTask(t Task) (err error) {
 		}
 
 		next = start.Add(time.Second * time.Duration(t.Memo.Scenario.FreqTill.Value*g*60))
-		if start.Before(now) {
+		if !start.After(now) {
 			next = NextTime(start, t.Memo.Scenario.FreqTill)
 		}
 
-		for next.Before(end) {
+		for !next.After(end) {
 			timemap[id] = next
 			GlobalTimeMap[int64(t.Memo.ID)] = timemap
 
@@ -113,14 +101,8 @@ func BuildTimeMapTask(t Task) (err error) {
 		}
 	}
 
-	if after {
-		if strings.EqualFold(t.Memo.Scenario.FreqAfter.Granula, "d") {
-			g = 1440 //minutes
-		} else if strings.EqualFold(t.Memo.Scenario.FreqAfter.Granula, "h") {
-			g = 60 //minutes
-		} else if strings.EqualFold(t.Memo.Scenario.FreqAfter.Granula, "m") {
-			g = 1 //minute
-		}
+	if after && !end.Add(time.Second*time.Duration(t.Memo.Scenario.FreqAfter.Value*Gran(t.Memo.Scenario.FreqAfter.Granula)*60*t.Memo.Scenario.FreqAfter.Count)).Before(now) {
+		g = Gran(t.Memo.Scenario.FreqAfter.Granula)
 
 		if t.Memo.Scenario.FreqAfter.Count == 0 {
 			c = 1
@@ -132,6 +114,10 @@ func BuildTimeMapTask(t Task) (err error) {
 
 		next = end.Add(time.Second * time.Duration(t.Memo.Scenario.FreqAfter.Value*g*60))
 		for i := 0; i <= c; i++ {
+			if next.Before(now) {
+				next = next.Add(time.Second * time.Duration(t.Memo.Scenario.FreqAfter.Value*g*60))
+				continue
+			}
 			timemap[id] = next
 			GlobalTimeMap[int64(t.Memo.ID)] = timemap
 			timecount[id] = c
@@ -168,4 +154,18 @@ func NextTime(point time.Time, freq Freq) time.Time {
 		start = start.Add(time.Second * time.Duration(gransec))
 	}
 	return start
+}
+
+//Gran returns actual value for time granula
+func Gran(granula string) int {
+	g := 0
+	if strings.EqualFold(granula, "d") {
+		g = 1440 //minutes
+	} else if strings.EqualFold(granula, "h") {
+		g = 60 //minutes
+	} else if strings.EqualFold(granula, "m") {
+		g = 1 //minute
+	}
+
+	return g
 }

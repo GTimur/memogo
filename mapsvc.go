@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func Reader() (err error) {
+func GrpReader() (err error) {
 	tgrp := make(map[int64]string)
 	grp := make(map[string]bool)
 
@@ -17,7 +17,7 @@ func Reader() (err error) {
 
 	}
 
-	for kg, _ := range grp {
+	for kg := range grp {
 		for _, task := range GlobalTasks {
 			//for selected group
 			if strings.EqualFold(task.Group, kg) {
@@ -25,7 +25,6 @@ func Reader() (err error) {
 				fmt.Println("TASK:", task.ID, kg)
 			}
 		}
-
 	}
 
 	return err
