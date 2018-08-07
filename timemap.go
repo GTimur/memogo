@@ -38,8 +38,6 @@ func BuildTimeMapTask(t Task) (err error) {
 	start := t.Memo.Scenario.DateStart
 	end := t.Memo.Scenario.DateEnd
 
-	//fmt.Println("Before=", before, "Till=", after, "After=", till)
-
 	now := time.Now()  //now basis time
 	next := time.Now() //temporary variable for calculations
 	var id int64
@@ -51,7 +49,7 @@ func BuildTimeMapTask(t Task) (err error) {
 		return errors.New(fmt.Sprint("Event <Group:", t.Group, ",ID:", t.ID, "> outdated:", end.String()))
 	}
 
-	// Задача с предварительным уведомлением до начала события, до текущей даты и еще не началась.
+	// Remind before event, starts and ends before current date
 	if before && !start.Before(now) && !end.Before(now) {
 		g = Gran(t.Memo.Scenario.FreqBefore.Granula)
 
@@ -61,9 +59,13 @@ func BuildTimeMapTask(t Task) (err error) {
 			c = t.Memo.Scenario.FreqBefore.Count
 		}
 
-		// Планируем интервалы следующих дат уведомления
+		// calc next reminding dates
 		next = start.Add(time.Second * time.Duration(-1*t.Memo.Scenario.FreqBefore.Value*g*60))
 		for !next.After(start) {
+			if next.Before(now) {
+				next = next.Add(time.Second * time.Duration(c*g*60))
+				continue
+			}
 			timemap[id] = next
 			GlobalTimeMap[int64(t.Memo.ID)] = timemap
 			timecount[id] = c
@@ -73,6 +75,7 @@ func BuildTimeMapTask(t Task) (err error) {
 		}
 	}
 
+	// Remind till event goes, if event not ended now
 	if till && !end.Before(now) {
 		g = Gran(t.Memo.Scenario.FreqTill.Granula)
 
@@ -92,15 +95,14 @@ func BuildTimeMapTask(t Task) (err error) {
 		for !next.After(end) {
 			timemap[id] = next
 			GlobalTimeMap[int64(t.Memo.ID)] = timemap
-
 			timecount[id] = c
 			GlobalTimeCount[int64(t.Memo.ID)] = timecount
 			id++
 			next = next.Add(time.Second * time.Duration(t.Memo.Scenario.FreqTill.Value*g*60))
-			//fmt.Println(next)
 		}
 	}
 
+	// Remind after event was ended, if last counted remind time is not come (until now)
 	if after && !end.Add(time.Second*time.Duration(t.Memo.Scenario.FreqAfter.Value*Gran(t.Memo.Scenario.FreqAfter.Granula)*60*t.Memo.Scenario.FreqAfter.Count)).Before(now) {
 		g = Gran(t.Memo.Scenario.FreqAfter.Granula)
 
@@ -136,23 +138,23 @@ func BuildTimeMapTask(t Task) (err error) {
 func NextTime(point time.Time, freq Freq) time.Time {
 	now := time.Now()
 	start := point
-	g := 0
-	if strings.EqualFold(freq.Granula, "d") {
-		g = 1440 //minutes
-	} else if strings.EqualFold(freq.Granula, "h") {
-		g = 60 //minutes
-	} else if strings.EqualFold(freq.Granula, "m") {
-		g = 1 //minute
+	g := Gran(freq.Granula)
+	gransec := g * freq.Value * 60 // Granula in seconds
+
+	// point in PAST
+	if start.Before(now) {
+		for start.Before(now) {
+			start = start.Add(time.Second * time.Duration(gransec))
+		}
+		return start
 	}
-	gransec := g * freq.Value * 60
+
+	// point in FUTURE
 
 	for !start.Before(now) {
-		start = start.Add(time.Second * time.Duration(gransec*-1))
+		start = start.Add(time.Second * time.Duration(gransec*(-1)))
 	}
 
-	for start.Before(now) {
-		start = start.Add(time.Second * time.Duration(gransec))
-	}
 	return start
 }
 

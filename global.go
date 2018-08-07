@@ -10,6 +10,7 @@ import "time"
 var GlobalConfig Config
 
 // QueueGlobal - global Queue (plan)
+//	MemoID int64, Plan   Plan.Run (time.Time)
 var GlobalQueue Queue
 
 // GlobalTimeMap - store map of runtime for every memo (runmap)

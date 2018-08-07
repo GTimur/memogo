@@ -61,8 +61,8 @@ func (w *WebCtl) StartServe() (err error) {
 
 	cssFileServer := http.StripPrefix("/static/", fs)
 	http.Handle("/static/", cssFileServer)
-	http.HandleFunc("/", urlhome)   //Домашняя страница
-	http.HandleFunc("/res", urlres) //result
+	http.HandleFunc("/", urlhome)       //Домашняя страница
+	http.HandleFunc("/queue", urlqueue) //Task queue
 
 	go func() {
 		log.Println("Starting HTTP-server...")
@@ -139,7 +139,7 @@ func urlhome(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func urlres(w http.ResponseWriter, r *http.Request) {
+func urlqueue(w http.ResponseWriter, r *http.Request) {
 	// read tasks from disk and rebuild GlobalTask
 	err := TasksReload()
 	if err != nil {
@@ -158,13 +158,15 @@ func urlres(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
+	GetQueueEvent(GlobalQueue)
+
 	w.Header().Set("Content-Type", "text/html")
 
-	body := GlobalQueue.String()
+	body := GlobalQueue.StringByID()
 
 	main := HTMLDOC
 
-	page := Page{Title: "RESULT SET",
+	page := Page{Title: "MEMO TASKS QUEUE",
 		Body:    template.HTML(body),
 		LnkHome: "none",
 		DateNow: "",
@@ -176,9 +178,9 @@ func urlres(w http.ResponseWriter, r *http.Request) {
 		if err := home_template.ExecuteTemplate(w, "main", page); err != nil {
 			fmt.Sprintln("Homepage handling error:", err.Error())
 		}
-		fmt.Println("Homepage: GET request.")
+		fmt.Println("Queue page: GET request.")
 	} else {
-		fmt.Println("Homepage: POST request.")
+		fmt.Println("Queue page: POST request.")
 	}
 }
 

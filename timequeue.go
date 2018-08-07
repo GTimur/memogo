@@ -74,6 +74,32 @@ func (q *Queue) String() string {
 	return fmt.Sprintln(data)
 }
 
+// StringByID - return queue by grups in string for HTML
+func (q *Queue) StringByID() string {
+	var data []string
+	var id map[int64]bool //memoID
+	id = make(map[int64]bool)
+
+	// Find every memoID
+	for _, j := range *q {
+		id[j.MemoID] = true
+	}
+
+	fmt.Println("ID=", id)
+
+	// Generate data for every memoID
+	for k := range id {
+		data = append(data, fmt.Sprintln("ID:", k, "</br>"))
+		for _, j := range *q {
+			if k == j.MemoID {
+				data = append(data, fmt.Sprintln(j, "</br>"))
+			}
+		}
+	}
+
+	return fmt.Sprintln(data)
+}
+
 // Clear
 func (q *Queue) Clear() {
 	*q = nil

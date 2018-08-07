@@ -6,8 +6,8 @@ package memogo
 
 import (
 	"log"
+	"memogo/smtp"
 	"net/mail"
-	"net/smtp"
 )
 
 //EmailCredentials description of server and account description
