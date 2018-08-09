@@ -158,7 +158,9 @@ func urlqueue(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	GetQueueEvent(GlobalQueue)
+	var q Queue
+	q, err = GetQueueEvent(GlobalQueue)
+	fmt.Println("QUEUE q:", q)
 
 	w.Header().Set("Content-Type", "text/html")
 
