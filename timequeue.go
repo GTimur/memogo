@@ -104,3 +104,23 @@ func (q *Queue) StringByID() string {
 func (q *Queue) Clear() {
 	*q = nil
 }
+
+// RemoveEvt - removes event from queue
+func (q *Queue) RemoveEvt(event TaskPlan) (err error) {
+	if len(*q) == 0 {
+		return err
+	}
+
+	var tp []TaskPlan
+	tp = *q
+
+	for i, j := range *q {
+		if j.MemoID == event.MemoID && j.Plan.Run.Equal(event.Plan.Run) {
+			fmt.Println("Event to remove:", event)
+			tp = append(tp[:i], tp[i+1:]...)
+		}
+	}
+	*q = tp
+
+	return err
+}

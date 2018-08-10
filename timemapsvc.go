@@ -3,11 +3,12 @@ package memogo
 import (
 	"errors"
 	"fmt"
-	"strings"
+	"log"
 	"time"
 )
 
 /*not used*/
+/*
 func GrpReader() (err error) {
 	tgrp := make(map[int64]string)
 	grp := make(map[string]bool)
@@ -63,11 +64,12 @@ func CurrentAction(task Task) (err error) {
 
 	return err
 }
+*/
 
-// GetEvent - takes event from queue if it ready to process
+// GetQueueEvent - takes event from queue if it ready to be processed
 func GetQueueEvent(queue Queue) (q Queue, err error) {
 	q = q[:0]
-	if queue.Len() == 0 {
+	if len(queue) == 0 {
 		return q, errors.New("Queue contains no event")
 	}
 	alone := false
@@ -77,15 +79,15 @@ func GetQueueEvent(queue Queue) (q Queue, err error) {
 	end := now.Add(time.Second * time.Duration(ts))
 	event1, event2 := now, now
 
+	// Check all events in queue per pairs
 	for i := 0; i < queue.Len(); i++ {
-		if queue.Len() >= i+1 {
+		if len(queue) >= i+1 {
 			event1 = queue[i].Plan.Run
 			event2 = queue[i+1].Plan.Run
 			alone = false
-		} else {
+		} else { // if no pair exist
 			event1 = queue[i].Plan.Run
 			alone = true
-			//event2 = queue[i].Plan.Run.Add(time.Second * time.Duration(5*60)) //5 min
 		}
 
 		if event1.Before(start) || event1.After(end) {
@@ -110,4 +112,87 @@ func GetQueueEvent(queue Queue) (q Queue, err error) {
 
 	//	fmt.Println("EVENT2:", memoid)
 	return q, err
+}
+
+// MemoSvc - execute notification procedure
+func MemoSvc(queue Queue) (err error) {
+	var q Queue
+
+	q, err = GetQueueEvent(queue)
+	if err != nil {
+		if len(q) != 0 {
+			return err
+		}
+		return nil
+	}
+
+	auth := EmailCredentials{Username: GlobalConfig.SMTPSrv.Account,
+		Password: GlobalConfig.SMTPSrv.Password,
+		Server:   GlobalConfig.SMTPSrv.Addr,
+		Port:     GlobalConfig.SMTPSrv.Port,
+		From:     GlobalConfig.SMTPSrv.From,
+		FromName: GlobalConfig.SMTPSrv.FromName,
+		UseTLS:   GlobalConfig.SMTPSrv.UseTLS,
+	}
+
+	for _, evt := range q {
+		var memo Memo
+		memo, err = GlobalTasks.GetMemo(evt.MemoID)
+		if err != nil {
+			log.Println("MemoSvc: GetMemo error, Memo.ID ", evt.MemoID, ":\n", err)
+			return err
+		}
+		memoStr := ""
+		for _, r := range memo.Memo {
+			memoStr += r + "<br>"
+		}
+
+		//create new message (subj, msgbody)
+		msg := NewHTMLMessage(memo.Subj, memoStr)
+
+		// Collect all email recipients
+		msg.Body += "<br><br>Направлено:<br>"
+
+		if len(memo.Mails) == 0 {
+			log.Println("MemoSvc: No emails found for Memo ID=", memo.ID)
+			return errors.New(fmt.Sprintln("MemoSvc: No emails found for Memo ID=", memo.ID))
+		}
+		for _, m := range memo.Mails {
+			msg.To = append(msg.To, m)
+			msg.Body += m + "<br>"
+		}
+		// Remove doublecates if exist
+		msg.To = Dedup(msg.To)
+
+		// Sending memo
+		if err := SendEmailMsg(auth, msg); err != nil {
+			log.Println("MemoSvc: Error sending mail for \"", msg.To, "\":", err)
+			return err
+		}
+		err = queue.RemoveEvt(evt)
+		fmt.Println("QUEUELEN:", len(queue))
+		if err != nil {
+			log.Println("MemoSvc: Error r", err)
+			return err
+		}
+	}
+	return err
+}
+
+// Dedup - String slice deduplication (not saves the string sorting)
+func Dedup(slice []string) []string {
+	checked := map[string]bool{}
+
+	//Сохраним отображение без повторяющихся элементов
+	for i := range slice {
+		checked[slice[i]] = true
+	}
+
+	//Перенесем отображение в результат
+	result := []string{}
+	for key := range checked {
+		result = append(result, key)
+	}
+
+	return result
 }

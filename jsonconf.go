@@ -78,6 +78,8 @@ func (c *Config) readJSON() (err error) {
 		return aeserr
 	}
 
+	*c = jsonConfig
+
 	return err
 }
 

@@ -13,7 +13,7 @@ import (
 //EmailCredentials description of server and account description
 type EmailCredentials struct {
 	Username, Password, Server, From, FromName string
-	Port                                       int
+	Port                                       uint
 	UseTLS                                     bool
 }
 

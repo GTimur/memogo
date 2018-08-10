@@ -81,11 +81,12 @@ func (w *WebCtl) StartServe() (err error) {
 	return err
 }
 
-//Функции установки значений
+//SetHost - set Host
 func (w *WebCtl) SetHost(host net.IP) {
 	w.host = host
 }
 
+//SetPort - set Port
 func (w *WebCtl) SetPort(port uint16) {
 	w.port = port
 }
@@ -111,7 +112,7 @@ func (c *Config) ManagerSrvPort() uint16 {
 }
 
 /****/
-//Обработчик запросов для home - пример
+// Обработчик запросов для home - пример
 func urlhome(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 
@@ -126,10 +127,10 @@ func urlhome(w http.ResponseWriter, r *http.Request) {
 		DateNow: "",
 	}
 
-	home_template := template.Must(template.New("main").Parse(main))
+	homeTemplate := template.Must(template.New("main").Parse(main))
 
 	if r.Method == "GET" {
-		if err := home_template.ExecuteTemplate(w, "main", page); err != nil {
+		if err := homeTemplate.ExecuteTemplate(w, "main", page); err != nil {
 			fmt.Sprintln("Homepage handling error:", err.Error())
 		}
 		fmt.Println("Homepage: GET request.")
@@ -139,6 +140,7 @@ func urlhome(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// urlqueue - /queue page
 func urlqueue(w http.ResponseWriter, r *http.Request) {
 	// read tasks from disk and rebuild GlobalTask
 	err := TasksReload()
@@ -158,10 +160,6 @@ func urlqueue(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	var q Queue
-	q, err = GetQueueEvent(GlobalQueue)
-	fmt.Println("QUEUE q:", q)
-
 	w.Header().Set("Content-Type", "text/html")
 
 	body := GlobalQueue.StringByID()
@@ -174,11 +172,11 @@ func urlqueue(w http.ResponseWriter, r *http.Request) {
 		DateNow: "",
 	}
 
-	home_template := template.Must(template.New("main").Parse(main))
+	homeTemplate := template.Must(template.New("main").Parse(main))
 
 	if r.Method == "GET" {
-		if err := home_template.ExecuteTemplate(w, "main", page); err != nil {
-			fmt.Sprintln("Homepage handling error:", err.Error())
+		if err := homeTemplate.ExecuteTemplate(w, "main", page); err != nil {
+			fmt.Sprintln("Queue page handling error:", err.Error())
 		}
 		fmt.Println("Queue page: GET request.")
 	} else {

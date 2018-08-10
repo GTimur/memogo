@@ -12,10 +12,8 @@ taskmgr.go - tasks manager realization
 
 // TasksReload - rebuilds Tasks array
 func TasksReload() error {
-	var task Task
-
 	// clean Tasks array
-	GlobalTasks = GlobalTasks[0:0]
+	GlobalTasks = GlobalTasks[:0]
 	//	groups := make(map[int]string)
 
 	// collect all groups and all files
@@ -29,6 +27,7 @@ func TasksReload() error {
 
 	i := 0
 	for k := range files {
+		var task Task
 		task.ID = i
 		task.Group = filepath.Dir(strings.Replace(k, GlobalConfig.Root, "", -1)) //get name of folder as name of group
 		err := task.Memo.ReadJSON(k)
@@ -39,6 +38,5 @@ func TasksReload() error {
 		i++
 		GlobalTasks = append(GlobalTasks, task)
 	}
-	//fmt.Println(GlobalTasks)
 	return err
 }

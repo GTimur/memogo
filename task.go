@@ -6,6 +6,7 @@ task.go - memo tasks realization
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -18,7 +19,7 @@ import (
 
 // Memo definiton
 type Memo struct {
-	ID       int64       //ID
+	ID       int64     //ID
 	Date     time.Time //Date of creation
 	Scenario Remind    //Notification scheduling scenario options
 	Subj     string    //visible memo subject (header)
@@ -48,6 +49,9 @@ type Task struct {
 	Group string // Group tasks by each folder
 	Memo  Memo
 }
+
+//TaskList - arraya of tasks
+type TaskList []Task
 
 //ReadJSON reads JSON file into Memo struct
 func (m *Memo) ReadJSON(filename string) error {
@@ -104,6 +108,22 @@ func MakeFile(filename string) (err error) {
 	file, err := os.Create(filename)
 	defer file.Close()
 	return err
+}
+
+//GetMemo - returns Memo by MEMOID
+func (t *TaskList) GetMemo(id int64) (memo Memo, err error) {
+	if len(*t) == 0 {
+		return memo, errors.New("TaskList is empty")
+	}
+
+	for _, tsk := range *t {
+		if tsk.Memo.ID != id {
+			continue
+		}
+		return tsk.Memo, err
+	}
+
+	return memo, errors.New("TaskList: no records found")
 }
 
 // TestJSON -

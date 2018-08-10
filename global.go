@@ -20,4 +20,4 @@ var (
 )
 
 // GlobalTasks - Tasks array (taskmgr)
-var GlobalTasks []Task
+var GlobalTasks TaskList
