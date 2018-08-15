@@ -89,16 +89,22 @@ func BuildTimeMapTask(t Task) (err error) {
 		}
 
 		next = start.Add(time.Second * time.Duration(t.Memo.Scenario.FreqTill.Value*g*60))
-		if !start.After(now) {
+		/*if !start.After(now) {
 			next = NextTime(start, t.Memo.Scenario.FreqTill)
-		}
+		}*/
 
-		for !next.After(end) {
+		for !next.After(end) && c > 0 {
+			if next.Before(now) {
+				next = next.Add(time.Second * time.Duration(t.Memo.Scenario.FreqTill.Value*g*60))
+				c--
+				continue
+			}
 			timemap[id] = next
 			GlobalTimeMap[int64(t.Memo.ID)] = timemap
 			timecount[id] = c
 			GlobalTimeCount[int64(t.Memo.ID)] = timecount
 			id++
+			c--
 			next = next.Add(time.Second * time.Duration(t.Memo.Scenario.FreqTill.Value*g*60))
 		}
 	}
@@ -159,7 +165,7 @@ func NextTime(point time.Time, freq Freq) time.Time {
 	return start
 }
 
-//Gran returns actual value for time granula
+//Gran returns actual value for time granula in minutes
 func Gran(granula string) int {
 	g := 0
 	if strings.EqualFold(granula, "d") {
