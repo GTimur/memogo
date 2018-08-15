@@ -8,6 +8,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -115,13 +116,17 @@ func (c *Config) ManagerSrvPort() uint16 {
 // Обработчик запросов для home - пример
 func urlhome(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
+	srvURI := "http://" + GlobalConfig.ManagerSrvAddr() + ":" + strconv.Itoa(int(GlobalConfig.ManagerSrvPort()))
 
-	body := `<h1>Welcome to homepage</h1>
-	<p>You are welcome!</p>`
+	body := "<center><h1>" + BANNER + " " + VERSION + "</h1>" +
+		"<p>" +
+		"<ul>" +
+		"<li><h4><a href=" + srvURI + "/queue" + ">Очередь заданий на рассылку уведомлений</a></h4></li>" +
+		"</ul></center> </p>"
 
 	main := HTMLDOC
 
-	page := Page{Title: "HOME PAGE",
+	page := Page{Title: "MEMO GO reminder utility",
 		Body:    template.HTML(body),
 		LnkHome: "none",
 		DateNow: "",
@@ -133,33 +138,15 @@ func urlhome(w http.ResponseWriter, r *http.Request) {
 		if err := homeTemplate.ExecuteTemplate(w, "main", page); err != nil {
 			fmt.Sprintln("Homepage handling error:", err.Error())
 		}
-		fmt.Println("Homepage: GET request.")
+		//fmt.Println("Homepage: GET request.")
 	} else {
-		fmt.Println("Homepage: POST request.")
+		//fmt.Println("Homepage: POST request.")
 	}
 
 }
 
 // urlqueue - /queue page
 func urlqueue(w http.ResponseWriter, r *http.Request) {
-	// read tasks from disk and rebuild GlobalTask
-	err := TasksReload()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// read GlobalTask array and rebuild GlobalTimeMap
-	err = BuildTimeMap()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// read GlobalTimeMap and build GlobalQueue
-	err = GlobalQueue.MakeQueue()
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	w.Header().Set("Content-Type", "text/html")
 
 	body := GlobalQueue.StringByID()
@@ -178,9 +165,9 @@ func urlqueue(w http.ResponseWriter, r *http.Request) {
 		if err := homeTemplate.ExecuteTemplate(w, "main", page); err != nil {
 			fmt.Sprintln("Queue page handling error:", err.Error())
 		}
-		fmt.Println("Queue page: GET request.")
+		//fmt.Println("Queue page: GET request.")
 	} else {
-		fmt.Println("Queue page: POST request.")
+		//fmt.Println("Queue page: POST request.")
 	}
 }
 

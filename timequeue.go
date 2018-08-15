@@ -85,7 +85,7 @@ func (q *Queue) StringByID() string {
 		id[j.MemoID] = true
 	}
 
-	fmt.Println("ID=", id)
+	//fmt.Println("ID=", id)
 
 	// Generate data for every memoID
 	for k := range id {

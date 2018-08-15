@@ -20,7 +20,8 @@ func BuildTimeMap() (err error) {
 	for _, task := range GlobalTasks {
 		err = BuildTimeMapTask(task)
 		if err != nil {
-			fmt.Printf("BuildTimeMap error: %v\n", err)
+			//fmt.Printf("BuildTimeMap error: %v\n", err)
+			GlobalConfig.LogFile.Add(fmt.Sprintf("BuildTimeMap error: %v", err))
 			continue
 		}
 	}

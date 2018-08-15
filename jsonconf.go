@@ -17,6 +17,7 @@ type Config struct {
 	Root    string `json:"TASKS_ROOT_DIR_PATH"`
 	SMTPSrv SrvSMTP
 	MgrSrv  ManagerSrv
+	LogFile LogFile
 }
 
 // SrvSMTP setup smtp credentials
