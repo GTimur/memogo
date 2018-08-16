@@ -96,7 +96,7 @@ func GetQueueEvent(queue Queue) (q Queue, err error) {
 
 		// If skipped event1 time (T) < event2-event1 then it will be processed
 		//time.Since(start).Minutes() < event2.Sub(event1).Minutes()
-		fmt.Println("DEBUG(event1,2):", event1, event2)
+		GlobalConfig.LogFile.Add(fmt.Sprint("INFO: Time has come for event1: <", event1, ">, value for event2:<", event2, ">."))
 		if !event1.Before(start) && !event1.After(end) {
 			q = append(q, queue[i])
 			if (event2.Sub(event1).Seconds() < 60 || event1.Equal(event2)) && !alone {
@@ -170,7 +170,7 @@ func MemoSvc(queue Queue) (err error) {
 			return err
 		}
 		err = queue.RemoveEvt(evt)
-		fmt.Println("QUEUELEN:", len(queue))
+		GlobalConfig.LogFile.Add(fmt.Sprint("Message sent. <", evt.MemoID, ",", evt.Plan.Run, "> Queue size:", len(queue)))
 		if err != nil {
 			log.Println("MemoSvc: Error r", err)
 			return err

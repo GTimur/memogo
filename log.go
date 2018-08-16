@@ -34,7 +34,7 @@ type LogDatFile struct {
 // Add - writes line to logfile
 func (l *LogFile) Add(line string) (err error) {
 	prefix := time.Now().Format("2006-01-02 15:04:05")
-	file, err := os.OpenFile(l.Filename, os.O_APPEND, 0644)
+	file, err := os.OpenFile(l.Filename, os.O_APPEND|os.O_WRONLY, 0644)
 	defer file.Close()
 	if err != nil {
 		log.Printf("LogFile Add: %v\n", err)

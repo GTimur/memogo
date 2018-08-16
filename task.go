@@ -19,6 +19,7 @@ import (
 
 // Memo definiton
 type Memo struct {
+	Draft    bool
 	ID       int64     //ID
 	Date     time.Time //Date of creation
 	Scenario Remind    //Notification scheduling scenario options

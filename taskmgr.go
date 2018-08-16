@@ -39,6 +39,10 @@ func TasksReload() error {
 			log.Fatalf("TaskMgr Rebuild error: %v", err)
 			return err
 		}
+		// if Draft parameter set - ignore this memo
+		if task.Memo.Draft {
+			continue
+		}
 		// check for uniq Memo.ID (must no have duplicates)
 		if _, ok := mapID[task.Memo.ID]; ok {
 			GlobalConfig.LogFile.Add(fmt.Sprint("TasksReload: found duplcate Memo.ID: Memo.ID=<", task.Memo.ID, "> Group=<", task.Group, "> File=<", k, ">"))

@@ -12,7 +12,7 @@ import (
 
 const (
 	BANNER  = "MemoGO reminder utility"
-	VERSION = "v.0.2.7 by GTG (C) 2018"
+	VERSION = "v.0.2.8 by GTG (C) 2018"
 )
 
 // Banner - print program banner
@@ -40,10 +40,11 @@ func InitLog() {
 
 	if !datExist {
 		GlobalLogDatFile.Date = time.Now() //.Add(time.Duration(60) * time.Second)
-	}
-	GlobalLogDatFile.Date, err = GlobalLogDatFile.ReadLogDate()
-	if err != nil {
-		log.Fatalln("InitLog ReadLogDate error:", err)
+	} else {
+		GlobalLogDatFile.Date, err = GlobalLogDatFile.ReadLogDate()
+		if err != nil {
+			log.Fatalln("InitLog ReadLogDate error:", err)
+		}
 	}
 
 	// if logfile or datfile not exist - reinit all log files
