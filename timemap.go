@@ -89,11 +89,13 @@ func BuildTimeMapTask(t Task) (err error) {
 		}
 
 		next = start.Add(time.Second * time.Duration(t.Memo.Scenario.FreqTill.Value*g*60))
+		actual := !next.After(end)
+		next = start
 		/*if !start.After(now) {
 			next = NextTime(start, t.Memo.Scenario.FreqTill)
 		}*/
 
-		for !next.After(end) && c > 0 {
+		for actual && c > 0 {
 			if next.Before(now) {
 				next = next.Add(time.Second * time.Duration(t.Memo.Scenario.FreqTill.Value*g*60))
 				c--
@@ -106,6 +108,7 @@ func BuildTimeMapTask(t Task) (err error) {
 			id++
 			c--
 			next = next.Add(time.Second * time.Duration(t.Memo.Scenario.FreqTill.Value*g*60))
+			actual = !next.After(end)
 		}
 	}
 
@@ -167,12 +170,14 @@ func NextTime(point time.Time, freq Freq) time.Time {
 
 //Gran returns actual value for time granula in minutes
 func Gran(granula string) int {
-	g := 0
-	if strings.EqualFold(granula, "d") {
-		g = 1440 //minutes
-	} else if strings.EqualFold(granula, "h") {
-		g = 60 //minutes
-	} else if strings.EqualFold(granula, "m") {
+	g := 1
+	upG := strings.ToUpper(granula)
+
+	if strings.EqualFold(upG, "D") {
+		g = 1440 //day
+	} else if strings.EqualFold(upG, "H") {
+		g = 60 //hour
+	} else if strings.EqualFold(upG, "M") {
 		g = 1 //minute
 	}
 

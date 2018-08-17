@@ -116,7 +116,7 @@ func (q *Queue) RemoveEvt(event TaskPlan) (err error) {
 
 	for i, j := range *q {
 		if j.MemoID == event.MemoID && j.Plan.Run.Equal(event.Plan.Run) {
-			fmt.Println("Event to remove:", event)
+			GlobalConfig.LogFile.Add(fmt.Sprint("DEBUG: Removing event:", event))
 			tp = append(tp[:i], tp[i+1:]...)
 		}
 	}
