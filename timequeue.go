@@ -90,9 +90,12 @@ func (q *Queue) StringByID() string {
 	// Generate data for every memoID
 	for k := range id {
 		data = append(data, fmt.Sprintln("ID:", k, "</br>"))
+
+		i := 0 // limit 10 lines to print for ever MemoID
 		for _, j := range *q {
-			if k == j.MemoID {
+			if k == j.MemoID && i < 10 {
 				data = append(data, fmt.Sprintln(j, "</br>"))
+				i++
 			}
 		}
 	}
