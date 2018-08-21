@@ -88,7 +88,12 @@ func BuildTimeMapTask(t Task) (err error) {
 			c = t.Memo.Scenario.FreqTill.Count
 		}
 
+		monthly := strings.EqualFold(t.Memo.Scenario.FreqTill.Granula, "Monthly") //bool
+
 		next = start.Add(time.Second * time.Duration(t.Memo.Scenario.FreqTill.Value*g*60))
+		if monthly {
+			next = GranMonth(now, start)
+		}
 		actual := !next.After(end)
 		next = start
 		/*if !start.After(now) {
@@ -97,6 +102,11 @@ func BuildTimeMapTask(t Task) (err error) {
 
 		for actual && c > 0 {
 			if next.Before(now) {
+				if monthly {
+					next = GranMonth(next, start)
+					c--
+					continue
+				}
 				next = next.Add(time.Second * time.Duration(t.Memo.Scenario.FreqTill.Value*g*60))
 				c--
 				continue
@@ -107,7 +117,11 @@ func BuildTimeMapTask(t Task) (err error) {
 			GlobalTimeCount[int64(t.Memo.ID)] = timecount
 			id++
 			c--
-			next = next.Add(time.Second * time.Duration(t.Memo.Scenario.FreqTill.Value*g*60))
+			if monthly {
+				next = GranMonth(next, start)
+			} else {
+				next = next.Add(time.Second * time.Duration(t.Memo.Scenario.FreqTill.Value*g*60))
+			}
 			actual = !next.After(end)
 		}
 	}
@@ -163,6 +177,29 @@ func NextTime(point time.Time, freq Freq) time.Time {
 
 	for !start.Before(now) {
 		start = start.Add(time.Second * time.Duration(gransec*(-1)))
+	}
+
+	return start
+}
+
+//GranMonth calculate nearest to basis time point by month shift
+func GranMonth(basis time.Time, point time.Time) time.Time {
+	start := point
+
+	// point in PAST
+	if !start.After(basis) {
+		for !start.After(basis) {
+			start = start.AddDate(0, 1, 0)
+		}
+		return start
+	}
+
+	// point in FUTURE
+	if !start.Before(basis) {
+		for !start.Before(basis) {
+			start = start.AddDate(0, -1, 0)
+		}
+		return start
 	}
 
 	return start

@@ -14,7 +14,7 @@ const (
 	// BANNER - application text banner
 	BANNER = "MemoGO reminder utility"
 	// VERSION - application text banner
-	VERSION = "v.0.3.0 by GTG (C) 2018"
+	VERSION = "v.0.3.1 by GTG (C) 2018"
 )
 
 // Banner - print program banner

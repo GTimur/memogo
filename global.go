@@ -27,3 +27,4 @@ var GlobalLogDatFile LogDatFile
 
 // GlobalInitDelay - delay in seconds to run InitTasks()
 var GlobalInitDelay int
+var DelayCounter int

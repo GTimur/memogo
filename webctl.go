@@ -151,7 +151,7 @@ func urlqueue(w http.ResponseWriter, r *http.Request) {
 
 	body := GlobalQueue.StringByID()
 	body += "<br>"
-	body += "InitTasks countdown (minutes):" + string(GlobalInitDelay/60) + "<br>"
+	body += "InitTasks countdown :" + strconv.Itoa((GlobalInitDelay-DelayCounter)/60) + " min " + strconv.Itoa((GlobalInitDelay-DelayCounter)%60) + " sec. <br>"
 
 	main := HTMLDOC
 
