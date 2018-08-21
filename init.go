@@ -11,8 +11,10 @@ import (
 */
 
 const (
-	BANNER  = "MemoGO reminder utility"
-	VERSION = "v.0.2.9 by GTG (C) 2018"
+	// BANNER - application text banner
+	BANNER = "MemoGO reminder utility"
+	// VERSION - application text banner
+	VERSION = "v.0.3.0 by GTG (C) 2018"
 )
 
 // Banner - print program banner

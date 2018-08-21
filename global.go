@@ -24,3 +24,6 @@ var GlobalTasks TaskList
 
 // LogDate - log file creation date (used in logfile.dat)
 var GlobalLogDatFile LogDatFile
+
+// GlobalInitDelay - delay in seconds to run InitTasks()
+var GlobalInitDelay int

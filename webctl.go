@@ -150,6 +150,8 @@ func urlqueue(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 
 	body := GlobalQueue.StringByID()
+	body += "<br>"
+	body += "InitTasks countdown (minutes):" + string(GlobalInitDelay/60) + "<br>"
 
 	main := HTMLDOC
 

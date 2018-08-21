@@ -36,8 +36,9 @@ func TasksReload() error {
 		task.Group = filepath.Dir(strings.Replace(k, GlobalConfig.Root, "", -1)) //get name of folder as name of group
 		err := task.Memo.ReadJSON(k)
 		if err != nil {
-			log.Fatalf("TaskMgr Rebuild error: %v", err)
-			return err
+			GlobalConfig.LogFile.Add(fmt.Sprintf("ERROR: Task file=<%s>: %v", k, err))
+			//return err
+			continue
 		}
 		// if Draft parameter set - ignore this memo
 		if task.Memo.Draft {
