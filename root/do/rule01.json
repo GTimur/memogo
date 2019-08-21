@@ -1,0 +1,33 @@
+{
+	"Draft": true,
+	"ID": 100,
+	"Date": "2018-08-01T14:20:11.2212354+03:00",
+	"Scenario": {
+		"DateStart": "2011-08-01T10:00:00+03:00",
+		"DateEnd": "2011-08-01T23:59:59+03:00",
+		"FreqBefore": {
+			"Granula": "d",
+			"Value": 10,
+			"Count": -1
+		},
+		"FreqTill": {
+			"Granula": "h",
+			"Value": -1,
+			"Count": -1
+		},
+		"FreqAfter": {
+			"Granula": "m",
+			"Value": -1,
+			"Count": -1
+		}
+	},
+	"Subj": "Срок действия сертификата SSL",
+	"Memo": [
+		"Истекает срок действия SSL сертификата для",
+		"портала ymkbank.ru контактная информация: +7(861)2100553."
+	],
+	"Mails": [
+		"gtg@ymkbank.ru",
+		"support@ymkbank.ru"
+	]
+}

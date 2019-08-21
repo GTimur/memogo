@@ -1,0 +1,46 @@
+{
+	"Draft": false,
+	"ID": 101,
+	"Date": "2019-08-21T08:00:00+03:00",
+	"Scenario": {
+		"DateStart": "2020-09-01T10:10:00+03:00",
+		"DateEnd": "2020-10-19T23:59:59+03:00",
+		"FreqBefore": {
+			"Granula": "m",
+			"Value": -1,
+			"Count": -1
+		},
+		"FreqTill": {
+			"Granula": "d",
+			"Value": 5,
+			"Count": -1
+		},
+		"FreqAfter": {
+			"Granula": "m",
+			"Value": -1,
+			"Count": -10
+		}
+	},
+	"Subj": "Истекает срок действия сертификата Thawte EV RSA CA 2019.",
+	"Memo": [
+		"Внимание! 19 октября 2020 г. 15:00:00 истекает срок действия сертификата Thawte EV RSA CA 2019 для Интернет-банкинга iBank 2.",
+                "Необходимо выпустить новый сертификат до указанного срока.",
+		"",
+                "Сведения о действующем сертификате:",
+		"CN = ibank.ymkbank.ru",
+		"OU = IT Department",
+		"O = LLC UMK BANK",
+		"L = Krasnodar",
+		"C = RU",
+		"SERIALNUMBER = 1172375051936",
+		"1.3.6.1.4.1.311.60.2.1.3 = RU",
+		"2.5.4.15 = Private Organization",
+		"",
+		"MemoGO. Сервис напоминаний. Хост: WS-ADMIN-02."
+	],
+	"Mails": [
+		"gtg@ymkbank.ru",
+		"support@ymkbank.ru",
+		"it.bank@ugrus.com"
+	]
+}

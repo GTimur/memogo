@@ -1,0 +1,33 @@
+{
+	"Draft": false,
+	"ID": 1,
+	"Date": "2018-08-01T08:30:00+03:00",
+	"Scenario": {
+		"DateStart": "2018-08-15T10:00:00+03:00",
+		"DateEnd": "2024-08-16T23:59:59+03:00",
+		"FreqBefore": {
+			"Granula": "m",
+			"Value": -1,
+			"Count": -1
+		},
+		"FreqTill": {
+			"Granula": "d",
+			"Value": 1,
+			"Count": -1
+		},
+		"FreqAfter": {
+			"Granula": "m",
+			"Value": -1,
+			"Count": -10
+		}
+	},
+	"Subj": "Тестовое сообщение от MemoGo.",
+	"Memo": [
+		"Данное сообщение создано автоматически для подтверждения работы сервиса.",
+                "",
+		"MemoGO. Сервис напоминаний размещен на WS-ADMIN-02."
+	],
+	"Mails": [
+		"gtg@ymkbank.ru"
+	]
+}
