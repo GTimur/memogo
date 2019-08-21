@@ -6,7 +6,7 @@ package memogo
 
 import (
 	"log"
-	"memogo/smtp"
+	"memogo/pkg/smtp"
 	"net/mail"
 )
 

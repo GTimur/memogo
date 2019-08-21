@@ -10,7 +10,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"memogo/smtp"
+	"memogo/pkg/smtp"
 	"mime"
 	"net/mail"
 	"path/filepath"

@@ -1,0 +1,21 @@
+{
+	"TASKS_ROOT_DIR_PATH": "root\\",
+	"SMTPSrv": {
+		"Addr": "10.20.20.6",
+		"Port": 25,
+		"Account": "noti@ymkbank.ru",
+		"Password": "244*233*4*54*156*",
+		"From": "noti@ymkbank.ru",
+		"FromName": "Memo GO",
+		"UseTLS": false
+	},
+	"MgrSrv": {
+		"Addr": "127.0.0.1",
+		"Port": 8000
+	},
+	"LogFile": {
+		"Filename": "logfile.log",
+		"CleanStale": false,
+		"TTLDays": 365
+	}
+}
